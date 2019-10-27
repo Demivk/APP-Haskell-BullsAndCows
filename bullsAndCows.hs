@@ -11,24 +11,25 @@ maxRange = '9'
 bullsAndCows = do
     numberToGuess <- getStdRandom(generateNumberToGuess numberLength [minRange .. maxRange])
     putStrLn "Bulls and Cows: Game started! (Type STOP to stop the game)"
-    loop numberToGuess
-    where loop numberToGuess = do
+    loop numberToGuess 1 where
+    loop :: [Char] -> Int -> IO()
+    loop numberToGuess turns = do
             input <- getLine
             if isInputValid input
                 then
                     let (bulls, cows) = generateScore numberToGuess input in
                     if bulls == numberLength
                         then
-                            putStrLn ("You won the game! The answer was " ++ show numberToGuess)
+                            putStrLn ("You won the game! The answer was " ++ show numberToGuess ++ ". It took " ++ show turns ++ " turns.")
                     else do
                             putStrLn (show bulls ++ " bulls, " ++ show cows ++ " cows")
-                            loop numberToGuess
+                            loop numberToGuess (succ turns)
                 else if input == "STOP"
                     then
                         return()
                 else do
                     putStrLn "Input is not valid"
-                    loop numberToGuess
+                    loop numberToGuess (succ turns)
 
 generateNumberToGuess :: Int -> [a] -> StdGen -> ([a], StdGen)
 generateNumberToGuess numberLength list generator = f numberLength list generator (length list - 1) []
